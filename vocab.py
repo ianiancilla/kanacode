@@ -1,23 +1,14 @@
 import openpyxl
 import pykakasi
 
-
-import text
-
 class Vocab():
-    """ a class for a vocabulary of japanese words in kana and romaji, with English translation"""
+    """ a class for a vocabulary of japanese words in kana and romaji, with English translation """
 
     def __init__(self, load_screen):
         self.app = load_screen.app
         self.hiragana = {}
         self.katakana = {}
         self._load()
-
-        # change app state to exit loading screem
-        # self.app.state = main_menu
-        # TODO test to remove!!!
-        self.app.running = False
-
 
     def _load(self):
         self.vocab_xl = openpyxl.load_workbook("vocabulary.xlsx")
@@ -28,7 +19,7 @@ class Vocab():
         self.katakana_xlsh = self.vocab_xl["katakana"]
         self._make_sheet(self.katakana_xlsh, "katakana", self.katakana)
 
-    def _make_sheet(self, sheet, kana, dict):
+    def _make_sheet(self, sheet, kana, dic):
         """ function to make each sheet """
 
         kakasi = pykakasi.kakasi()
@@ -42,6 +33,6 @@ class Vocab():
             romaji = kakasi.getConverter().do(word)
             if word == romaji:
                 continue
-            dict[romaji] = {}
-            dict[romaji]["kana"] = word
-            dict[romaji]["en"] = row[1].value
+            dic[romaji] = {}
+            dic[romaji]["kana"] = word
+            dic[romaji]["en"] = row[1].value

@@ -1,7 +1,7 @@
 import pygame
 
 from vocab import Vocab
-from round_rects import round_rect
+from graph_elements import draw_frame
 import text
 
 class Load_screen():
@@ -17,9 +17,11 @@ class Load_screen():
 
         self.update_screen()
         self.draw_screen()
-
-
+        pygame.display.flip()
         self.app.vocab = Vocab(self)
+
+        # self.next_app_state()
+
 
     def update_screen(self):
         # create loading message
@@ -33,8 +35,7 @@ class Load_screen():
     def draw_screen(self):
         self.app.screen.fill(self.app.settings.col_dark)
         # draw frame for text
-        round_rect(self.app.screen, self.frame, self.app.settings.col_brand, border=15,
-                                inside=self.app.settings.col_dacc)
+        draw_frame(self.app.screen, self.frame, self.app.settings.col_dacc, self.app.settings.col_brand, 15)
 
         # draw text
         self.app.screen.blit(self.txt_title_image, self.txt_rect)
@@ -45,3 +46,6 @@ class Load_screen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.app.quit_game()
+
+    def next_app_state(self):    # TODO change
+        self.app.running = False

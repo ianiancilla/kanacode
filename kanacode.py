@@ -1,4 +1,5 @@
 import pygame
+
 from settings import Settings
 from load_screen import Load_screen
 
