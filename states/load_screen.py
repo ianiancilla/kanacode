@@ -1,7 +1,7 @@
 import pygame
 
 from vocabulary.vocab import Vocab
-from graph_elements import draw_frame
+from helper.graph_elements import draw_frame
 import text
 
 
@@ -16,7 +16,7 @@ class Load_screen():
                                  int(self.app.screen.get_rect().height*(1/2)))
         self.frame.center = self.app.screen.get_rect().center
 
-        self.update_screen(events = None)
+        self.update_screen()
         self.draw_screen()
         pygame.display.flip()
         self.app.vocab = Vocab(self)
@@ -25,7 +25,7 @@ class Load_screen():
         for word in self.app.vocab.hiragana:
             print(word)
 
-    def update_screen(self):
+    def update_screen(self, events = None):
         # create loading message
         loading_title = text.load_title
         self.txt_title_image, self.txt_rect = self.app.settings.load_font_title.render(
