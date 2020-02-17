@@ -1,8 +1,9 @@
 import pygame
 
-from vocab import Vocab
+from vocabulary.vocab import Vocab
 from graph_elements import draw_frame
 import text
+
 
 class Load_screen():
     """ a class for the app loading screen """
@@ -15,19 +16,23 @@ class Load_screen():
                                  int(self.app.screen.get_rect().height*(1/2)))
         self.frame.center = self.app.screen.get_rect().center
 
-        self.update_screen()
+        self.update_screen(events = None)
         self.draw_screen()
         pygame.display.flip()
         self.app.vocab = Vocab(self)
 
-        # self.next_app_state()
-
+        # TODO test, remove
+        for word in self.app.vocab.hiragana:
+            print(word)
 
     def update_screen(self):
         # create loading message
         loading_title = text.load_title
-        self.txt_title_image = self.app.settings.load_font_title.render(loading_title,
-                                                                  True, self.app.settings.load_color)
+        self.txt_title_image, self.txt_rect = self.app.settings.load_font_title.render(
+                                            loading_title,
+                                            self.app.settings.load_color,
+                                            size = 40)
+
         # name and place rect for the loading text
         self.txt_rect = self.txt_title_image.get_rect()
         self.txt_rect.center = self.app.screen.get_rect().center
@@ -43,9 +48,8 @@ class Load_screen():
     # EVENT HANDLING
     def check_events(self):
         """Checks for and responds to mouse and kb events"""
+        events = pygame.event.get()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.app.quit_game()
-
-    def next_app_state(self):    # TODO change
-        self.app.running = False
+        return events
