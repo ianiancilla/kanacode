@@ -4,4 +4,4 @@
 load_title = "LOADING..."
 
 # Hiragana to Romaji screen
-h2r_input = "type the transliteration here"
+h2r_input_tip = "type transliteration"

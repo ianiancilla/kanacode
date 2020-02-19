@@ -4,16 +4,17 @@ import openpyxl
 import pykakasi
 
 
-class Vocab():
-    """ a class for a vocabulary of japanese words in kana and romaji, with English translation"""
+class Vocab(object):
+    """ a class for a vocabulary of japanese words in kana and romaji, with English translationof each """
 
     def __init__(self, load_screen):
+        """ initialises vocab """
         self.app = load_screen.app
         self.hiragana = []
         self.katakana = []
         self._load()
 
-        # self.characters_hiragana = {
+        # self.characters_hiragana = {    # TODO create the kana choice table
         #     "vowel": {"a": "あ", "i": "い","u": "う", "e": "え", "o": "お"},
         #     "k": {"a": "か", "i": "き","u": "く", "e": "け", "o": "こ"},
         #     "s": {"a": "さ", "i": "し", "u": "す", "e": "せ", "o": "そ"},
@@ -28,20 +29,23 @@ class Vocab():
         # }
 
     def _load(self):
-        self.vocab_xl = openpyxl.load_workbook("vocabulary/vocabulary.xlsx")
+        """ loads xcls workbook with vocabulary, and creates wordlists from it """
+        self.vocab_xl = openpyxl.load_workbook(self.app.settings.vocab_file)
 
         self.hiragana_xlsh = self.vocab_xl["hiragana"]
-        self._make_sheet(self.hiragana_xlsh, "hiragana", self.hiragana)
+        self._make_sheet(self.hiragana_xlsh, "hiragana", self.hiragana)    # TODO if katakana implementation is changed
+                                                                           # this could be revised.
 
-        self.katakana_xlsh = self.vocab_xl["katakana"]
-        self._make_sheet(self.katakana_xlsh, "katakana", self.katakana)
+        # TODO either remove or implement katakana sheet
+        # self.katakana_xlsh = self.vocab_xl["katakana"]
+        # self._make_sheet(self.katakana_xlsh, "katakana", self.katakana)
 
     def _make_sheet(self, sheet, kana, word_list):
-        """ function to make each sheet """
+        """ function to create a wordlist from a sheet of a kana xls document """
         kakasi = pykakasi.kakasi()
         if kana == "hiragana":
             kakasi.setMode("H", "a")
-        elif kana == "katakana":
+        elif kana == "katakana":    # TODO remove if katakana sheet is removed
             kakasi.setMode("K", "a")
 
         for row in sheet.iter_rows(min_row=2, max_col=2):
@@ -55,13 +59,15 @@ class Vocab():
             word_list.append(word)
 
 
-class Word():
-    def __init__(self, kana, romaji, english):
+class Word(object):
+    """ a class for each word, so that it stores kana, translation and transliteration """
+    def __init__(self, hiragana, romaji, english):
+        self.hiragana = hiragana
         self.romaji = romaji
-        self.kana = kana
         self.english = english
 
     def __str__(self):
-        str = "{kana}: {romaji} ({english})".format(
-            kana = self.kana, romaji = self.romaji, english = self.english)
-        return str
+        """ defines how to print word objects """
+        stringified = "{kana}: {romaji} ({english})".format(
+            kana=self.hiragana, romaji=self.romaji, english=self.english)
+        return stringified
