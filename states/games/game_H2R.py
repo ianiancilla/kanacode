@@ -1,9 +1,9 @@
 import random
-
 import pygame
 
-from helper.pygame_helpers import create_centered_text, create_containers_hor
 from helper.textinput import TextInput
+from helper.pygame_helpers import create_centered_text, create_containers
+from helper.button import Button
 import text
 
 
@@ -22,9 +22,10 @@ class H2R(object):
         self.container_english, \
         self.container_kana, \
         self.container_romaji, \
-        self.container_buttons = create_containers_hor(
+        self.container_buttons = create_containers(
             self.app.screen,
-            (2 / 10, 3 / 10, 3 / 10, 2 / 10))
+            (5 / 20, 6 / 20, 5 / 20, 4 / 20),
+            layout="V")
 
         # creates text input field
         self.text_input = TextInput(
@@ -62,6 +63,15 @@ class H2R(object):
             self.app.settings.h2r_font_tip_color,
             self.container_romaji)
 
+        # creates buttons
+        self.butt_help = self._h2r_button(text.h2r_button_help)
+        self.butt_check = self._h2r_button(text.h2r_button_check)
+        self.butt_quit = self._h2r_button(text.h2r_button_quit)
+
+        self.buttons = [self.butt_help, self.butt_check, self.butt_quit]
+
+        self._place_buttons(self.buttons, self.container_buttons)
+
         # set initial status
         self.word = self._pick_word()
         self.previous_try = None  # determines background of text input field as feedback
@@ -90,26 +100,26 @@ class H2R(object):
         # draw backgrounds of containers
         self.app.screen.fill(self.app.settings.col_dark)
         pygame.draw.rect(self.app.screen,
-                         self.app.settings.col_lacc,
+                         self.app.settings.h2r_col_bg_en,
                          self.container_english)
         pygame.draw.rect(self.app.screen,
-                         self.app.settings.col_lacc,
+                         self.app.settings.h2r_col_bg_kan,
                          self.container_kana)
         pygame.draw.rect(self.app.screen,
-                         self.app.settings.col_dark,
+                         self.app.settings.h2r_col_bg_rom,
                          self.container_romaji)
         pygame.draw.rect(self.app.screen,
-                         self.app.settings.col_dark,
+                         self.app.settings.h2r_col_bg_but,
                          self.container_buttons)
 
         # draw bg of text input box
         if self.previous_try:
             if self.previous_try == "right":
-                romaji_frame_color = self.app.settings.h2r_feedback_color_right
+                romaji_frame_color = self.app.settings.col_success
             else:
-                romaji_frame_color = self.app.settings.h2r_feedback_color_wrong
+                romaji_frame_color = self.app.settings.col_danger
         else:
-            romaji_frame_color = self.app.settings.col_light
+            romaji_frame_color = self.app.settings.h2r_col_bg_input
         pygame.draw.rect(self.app.screen,
                          romaji_frame_color,
                          self.input_frame)
@@ -123,6 +133,10 @@ class H2R(object):
 
         # draw text input box
         self.app.screen.blit(self.text_input.get_surface(), self.text_input_rect)
+
+        # draw all buttons
+        for button in self.buttons:
+            button.draw(self.app.screen)
 
     # EVENT HANDLING
     def check_events(self):
@@ -157,3 +171,39 @@ class H2R(object):
     def _next_word(self):
         self.word = self._pick_word()
         self.text_input.clear_text()
+
+    # HELPERS
+    def _place_buttons(self, button_list, container_rect, layout="H"):
+        """
+        places buttons equidistant and centered on given container_rect, following given layout.
+        :param button_list: a list of Button objects
+        :param container_rect: a rect, delimiting the area of the screen buttons should occupy
+        :return: None
+        """
+        # define fraction of surface each container will take
+        butt_num = len(button_list)
+        containers_sizes = []
+        for i in range(butt_num):
+            containers_sizes.append(1/butt_num)
+
+        # create ane places containers for buttons according to chosen layout
+        if layout == "H":
+            butt_containers = create_containers(container_rect, containers_sizes, layout="H")
+        elif layout == "V":
+            butt_containers = create_containers(container_rect, containers_sizes, layout="V")
+        else:
+            raise TypeError("Improper argument given for layout parameter")
+
+        # places each button
+        for i in range(butt_num):
+            button_list[i].rect.center = butt_containers[i].center
+
+    def _h2r_button(self, txt):
+        return Button(((0, 0), self.app.settings.h2r_button_size),
+                      text=txt,
+                      color_base=self.app.settings.h2r_button_color,
+                      color_alt=self.app.settings.h2r_button_color_alt,
+                      font=self.app.settings.h2r_button_font,
+                      font_color=self.app.settings.h2r_button_font_color,
+                      font_color_alt=self.app.settings.h2r_button_font_color_alt
+                      )

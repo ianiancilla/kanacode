@@ -45,9 +45,11 @@ class LoadScreen(object):
     def draw_screen(self):
         """ draws each element of LoadingScreen """
         # draws background
-        self.app.screen.fill(self.app.settings.col_dark)
+        self.app.screen.fill(self.app.settings.load_bg)
         # draw frame for text
-        draw_frame(self.app.screen, self.frame, self.app.settings.col_dacc, self.app.settings.col_brand, 15)
+        draw_frame(self.app.screen, self.frame,
+                   self.app.settings.load_bg_frame,
+                   self.app.settings.load_bg_frame_border, 30)
         # draw text
         self.app.screen.blit(self.txt_image, self.txt_rect)
 
