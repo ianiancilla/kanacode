@@ -33,10 +33,6 @@ class LoadScreen(object):
         pygame.display.flip()
         self.app.vocab = Vocab(self)
 
-        # TODO test, remove
-        for word in self.app.vocab.hiragana:
-            print(word)
-
     def update_screen(self, events=None):
         """ implements changes that are needed by loading screen at every tick """
         # needed as it is called by loop, but screen is static and needs no changes
