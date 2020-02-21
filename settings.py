@@ -1,3 +1,5 @@
+import os 
+
 import pygame
 import pygame.freetype
 
@@ -33,7 +35,7 @@ class Settings(object):
         self.col_danger = pygame.Color("#f44336")
 
         # **** VOCABULARY SETTINGS ****
-        self.vocab_file = "vocabulary/vocabulary.xlsx"
+        self.vocab_file = os.path.join("vocabulary", "vocabulary.xlsx")
 
         # **** STATES SETTINGS ****
 
@@ -55,7 +57,7 @@ class Settings(object):
         self.h2r_col_bg_but = self.col_dark
         self.h2r_col_bg_input = self.col_light
 
-        self.h2r_font_kana = pygame.freetype.Font("font/KosugiMaru-Regular.ttf", 100)    # TODO ask about license
+        self.h2r_font_kana = pygame.freetype.Font(os.path.join("font","KosugiMaru-Regular.ttf"), 100)    # TODO ask about license
         self.h2r_font_kana_color = self.col_dark
 
         self.h2r_font_romaji = pygame.freetype.SysFont("Mono", 50)    # TODO change font
