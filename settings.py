@@ -47,7 +47,7 @@ class Settings(object):
         self.load_bg_frame_border = self.col_lacc
 
         # Hiragana to Romaji screen display settings
-        self.h2r_font_english = pygame.freetype.SysFont(None, 36)
+        self.h2r_font_english = pygame.freetype.SysFont("Sans", 36)
         self.h2r_font_english_color = self.col_dark
 
         # TODO add feature: let user select from multiple kana fonts, to get used to several ways of writing
@@ -73,7 +73,7 @@ class Settings(object):
         self.h2r_button_size = (300, 80)    # width + height tuple, in pixels
         self.h2r_button_color = self.col_brand
         self.h2r_button_color_alt = self.col_dacc
-        self.h2r_button_font = pygame.freetype.SysFont(None, 28)
+        self.h2r_button_font = pygame.freetype.SysFont("Sans", 28)
         self.h2r_button_font_color = self.col_dark
         self.h2r_button_font_color_alt = self.col_light
 
