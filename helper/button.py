@@ -7,6 +7,7 @@ class Button():    # TODO test border function
     """ a class for pygame clickable buttons """
     def __init__(self, rect,
                  text="Button",
+                 function=None,
                  color_base=pygame.Color("red"),
                  color_alt=pygame.Color("red"),
                  font=None,
@@ -15,6 +16,7 @@ class Button():    # TODO test border function
         """
         :param rect: a pygame rect object, or two tuples ((x, y), (width, height))
         :param text: a string, text to display on button
+        :param function: a function, to be executed when button is clicked
         :param color_base: a pygame color
         :param color_alt: a pygame color (color to change button to when clicked or hovered)
         :param font: a pygame.freetype2 font
@@ -24,7 +26,9 @@ class Button():    # TODO test border function
             self.rect = rect
         else:
             self.rect = pygame.Rect(rect)
+
         self.text = text
+        self.function = function
         self.color_base = color_base
         self.color_alt = color_alt
         if font:
@@ -74,3 +78,10 @@ class Button():    # TODO test border function
             if self.rect.top < pos[1] < self.rect.bottom:
                 return True
         return False
+
+    def on_mouse(self):
+        """ a function which checks if mouse position is on the button.
+        if it is, self.function will be executed """
+        pos_mouse = pygame.mouse.get_pos()
+        if self.is_inside(pos_mouse):
+            self.function()

@@ -1,6 +1,9 @@
 """
 Copyright 2017, Silas Gyger, silasgyger@gmail.com, All rights reserved.
 Borrowed from https://github.com/Nearoo/pygame-text-input under the MIT license.
+
+Modified 2020 by Marzia Faustinelli:
+    * added set_text and set_cursor_position methods
 """
 
 import os.path
@@ -164,8 +167,14 @@ class TextInput:
     def get_text(self):
         return self.input_string
 
+    def set_text(self, txt):
+        self.input_string = txt
+
     def get_cursor_position(self):
         return self.cursor_position
+
+    def set_cursor_position(self, pos):
+        self.cursor_position = pos
 
     def set_text_color(self, color):
         self.text_color = color

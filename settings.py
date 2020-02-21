@@ -77,3 +77,5 @@ class Settings(object):
 
         # KEY MAP settings
         self.key_quit = pygame.K_ESCAPE
+        self.key_help = pygame.K_F1
+        self.key_confirm = pygame.K_RETURN

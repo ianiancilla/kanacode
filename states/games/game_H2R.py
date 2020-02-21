@@ -2,7 +2,7 @@ import random
 import pygame
 
 from helper.textinput import TextInput
-from helper.pygame_helpers import create_centered_text, create_containers
+from helper.pygame_helpers import create_centered_text, create_containers, place_buttons
 from helper.button import Button
 import text
 
@@ -64,13 +64,13 @@ class H2R(object):
             self.container_romaji)
 
         # creates buttons
-        self.butt_help = self._h2r_button(text.h2r_button_help)
-        self.butt_check = self._h2r_button(text.h2r_button_check)
-        self.butt_quit = self._h2r_button(text.h2r_button_quit)
+        self.butt_help = self._h2r_button(text.h2r_button_help, self._help)
+        self.butt_check = self._h2r_button(text.h2r_button_check, self._confirm_word)
+        self.butt_quit = self._h2r_button(text.h2r_button_quit, self.app.quit_game)
 
         self.buttons = [self.butt_help, self.butt_check, self.butt_quit]
 
-        self._place_buttons(self.buttons, self.container_buttons)
+        place_buttons(self.buttons, self.container_buttons)
 
         # set initial status
         self.word = self._pick_word()
@@ -93,7 +93,12 @@ class H2R(object):
 
         # updates text input box
         if self.text_input.update(events):
-            self._check_word()
+            self._confirm_word()
+
+        # updates previous try, to return input field to default color if text
+        # was erased
+        if not self.text_input.get_text():
+            self.set_previous_try(None)
 
     def draw_screen(self):
         """ draws each element of H2R """
@@ -113,13 +118,14 @@ class H2R(object):
                          self.container_buttons)
 
         # draw bg of text input box
-        if self.previous_try:
-            if self.previous_try == "right":
+        if self.get_previous_try():
+            if self.get_previous_try() == "right":
                 romaji_frame_color = self.app.settings.col_success
             else:
                 romaji_frame_color = self.app.settings.col_danger
         else:
             romaji_frame_color = self.app.settings.h2r_col_bg_input
+
         pygame.draw.rect(self.app.screen,
                          romaji_frame_color,
                          self.input_frame)
@@ -135,8 +141,12 @@ class H2R(object):
         self.app.screen.blit(self.text_input.get_surface(), self.text_input_rect)
 
         # draw all buttons
+        pos_mouse = pygame.mouse.get_pos()
         for button in self.buttons:
-            button.draw(self.app.screen)
+            if not button.is_inside(pos_mouse):
+                button.draw(self.app.screen)
+            else:
+                button.draw(self.app.screen, alt=True)
 
     # EVENT HANDLING
     def check_events(self):
@@ -148,59 +158,59 @@ class H2R(object):
                                              and event.key == self.app.settings.key_quit):
                 self.app.quit_game()
                 return []  # this is so the text input does not activate while app is quitting
+            if event.type == pygame.KEYUP:
+                # if event.key == self.app.settings.key_confirm:    # commented out because this is
+                                                                    # handled in update method:
+                                                                    # self.text_input.update(events)
+                if event.key == self.app.settings.key_help:
+                    self._help()
+            if event.type == pygame.MOUSEBUTTONUP:
+                for button in self.buttons:
+                    button.on_mouse()
+
         return events
+
+    # getters/setters
+    def get_previous_try(self):
+        return self.previous_try
+
+    def set_previous_try(self, previous_try):
+        if self.get_previous_try() not in (None, "right", "wrong"):
+            raise TypeError("Wrong argument for previous try.")
+        self.previous_try = previous_try
+
+    # HELPERS
 
     def _pick_word(self):
         """ picks a random Word instance from the app's vocab"""
         return random.choice(list(self.app.vocab.hiragana))
 
-    def _check_word(self):
+    def _help(self):
+        word = self.word.romaji
+        self.text_input.set_text(word)
+        self.text_input.set_cursor_position(len(word))
+        self.set_previous_try("right")
+
+    def _confirm_word(self):
         """ checks whether input text is correct for current word """
         current_input = self.text_input.get_text().lower().strip()
-        print(current_input)
-        print(self.word.romaji)
         if current_input == self.word.romaji:
-            if self.previous_try == "right":
-                self.previous_try = None
+            if self.get_previous_try() == "right":
+                self.set_previous_try(None)
                 self._next_word()
             else:
-                self.previous_try = "right"
+                self.set_previous_try("right")
         else:
-            self.previous_try = "wrong"
+            self.set_previous_try("wrong")
 
     def _next_word(self):
         self.word = self._pick_word()
         self.text_input.clear_text()
 
-    # HELPERS
-    def _place_buttons(self, button_list, container_rect, layout="H"):
-        """
-        places buttons equidistant and centered on given container_rect, following given layout.
-        :param button_list: a list of Button objects
-        :param container_rect: a rect, delimiting the area of the screen buttons should occupy
-        :return: None
-        """
-        # define fraction of surface each container will take
-        butt_num = len(button_list)
-        containers_sizes = []
-        for i in range(butt_num):
-            containers_sizes.append(1/butt_num)
-
-        # create ane places containers for buttons according to chosen layout
-        if layout == "H":
-            butt_containers = create_containers(container_rect, containers_sizes, layout="H")
-        elif layout == "V":
-            butt_containers = create_containers(container_rect, containers_sizes, layout="V")
-        else:
-            raise TypeError("Improper argument given for layout parameter")
-
-        # places each button
-        for i in range(butt_num):
-            button_list[i].rect.center = butt_containers[i].center
-
-    def _h2r_button(self, txt):
+    def _h2r_button(self, txt, function):
         return Button(((0, 0), self.app.settings.h2r_button_size),
                       text=txt,
+                      function=function,
                       color_base=self.app.settings.h2r_button_color,
                       color_alt=self.app.settings.h2r_button_color_alt,
                       font=self.app.settings.h2r_button_font,

@@ -86,3 +86,34 @@ def create_containers(surface, containers_iter, layout="H"):
                 raise TypeError("Improper argument given for layout parameter")
 
     return containers_rects
+
+
+def place_buttons(button_list, container_rect, layout="H"):
+    """
+    places buttons equidistant and centered on given container_rect,
+    following given layout.
+    :param button_list: a list of Button objects
+    :param container_rect: a rect, delimiting the area of the screen
+            buttons should occupy
+    :param layout: can be "H" or "V".
+                    *H(orizontal) sets buttons next to each other
+                    *V(ertical) sets buttons in a vertical column
+    :return: None
+    """
+    # define fraction of surface each container will take
+    butt_num = len(button_list)
+    containers_sizes = []
+    for i in range(butt_num):
+        containers_sizes.append(1/butt_num)
+
+    # create ane places containers for buttons according to chosen layout
+    if layout == "H":
+        butt_containers = create_containers(container_rect, containers_sizes, layout="H")
+    elif layout == "V":
+        butt_containers = create_containers(container_rect, containers_sizes, layout="V")
+    else:
+        raise TypeError("Improper argument given for layout parameter")
+
+    # places each button
+    for i in range(butt_num):
+        button_list[i].rect.center = butt_containers[i].center
